@@ -50,6 +50,10 @@ class Client:
         self.send_button.config(font = ("Calibri", 12))
         self.send_button.pack(padx = 20, pady = 5)
         
+        self.audio_button = tkinter.Button(self.win, text = "Audio", command = self.write)
+        self.audio_button.config(font = ("Calibri", 12))
+        self.audio_button.pack(padx = 20, pady = 5)
+        
         self.gui_done = True
         
         self.win.protocol("WM_DELETE_WINDOW", self.stop)
