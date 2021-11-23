@@ -1,6 +1,5 @@
 import socket
 import threading
-from tkinter import StringVar
 
 HOST = "127.0.0.1" # Public ID adress: myip.is
 PORT = 9090
@@ -17,19 +16,13 @@ def broadcast(message):
     for client in clients:
         client.send(message)
         
-def broadcastAudio(message, client):
-    while(True):
-        for cl in clients:
-            if cl != client:
-                cl.send(message)
-        
-        
 def receive():
     while True:
         client, address = server.accept()
         print(f"Se ha conectado {str(address)}")
+        
         client.send("Nickname".encode("utf-8"))
-        nickname = client.recv(4096)
+        nickname = client.recv(1024)
         
         nicknames.append(nickname)
         clients.append(client)
@@ -42,11 +35,9 @@ def receive():
 def handle(client):
     while True:
         try:
-            message = client.recv(4096)
-            if isinstance(message, bytes):
-                broadcast(message)
-            else:
-                broadcastAudio(message, client)
+            message = client.recv(1024)
+            print(f"{nicknames[clients.index(client)]} dice {message}")
+            broadcast(message)
         except:
             index = clients.index(client)
             clients.remove(client)
