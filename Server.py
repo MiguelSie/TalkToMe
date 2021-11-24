@@ -16,6 +16,11 @@ def broadcast(message):
     for client in clients:
         client.send(message)
         
+def broadcastAudio(message, client):
+    for c in clients:
+        if c != client:
+            c.send(message)
+        
 def receive():
     while True:
         client, address = server.accept()
@@ -36,7 +41,7 @@ def handle(client):
     try:
         while True:
             message = client.recv(4096)
-            broadcast(message)
+            broadcastAudio(message, client)
     except:
         index = clients.index(client)
         clients.remove(client)
