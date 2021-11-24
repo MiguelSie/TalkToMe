@@ -12,11 +12,7 @@ server.listen()
 clients = []
 nicknames = []
 
-def broadcast(message):
-    for client in clients:
-        client.send(message)
-        
-def broadcastAudio(message, client):
+def broadcast(message, client):
     for c in clients:
         if c != client:
             c.send(message)
@@ -32,7 +28,7 @@ def receive():
         nicknames.append(nickname)
         clients.append(client)
         print (f"{nickname} se ha conectado al servidor")
-        broadcast(f"{nickname} entró al chat\n".encode("utf-8"))
+        broadcast(f"{nickname} entró al chat\n".encode("utf-8"), client)
         
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
@@ -41,7 +37,7 @@ def handle(client):
     try:
         while True:
             message = client.recv(4096)
-            broadcastAudio(message, client)
+            broadcast(message, client)
     except:
         index = clients.index(client)
         clients.remove(client)
