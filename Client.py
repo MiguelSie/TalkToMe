@@ -41,14 +41,15 @@ class Client:
         
         self.gui_done = False    
         self.running = True
+        self.mute = False
         
-        gui_thread = threading.Thread(target = self.gui_loop)
-        receive_thread = threading.Thread(target = self.receive)
-        audio_thread = threading.Thread(target = self.sendAudio)
+        self.gui_thread = threading.Thread(target = self.gui_loop)
+        self.receive_thread = threading.Thread(target = self.receive)
+        self.audio_thread = threading.Thread(target = self.sendAudio)
         
-        gui_thread.start()
-        receive_thread.start()
-        audio_thread.start()
+        self.gui_thread.start()
+        self.receive_thread.start()
+        self.audio_thread.start()
 
         
     def gui_loop(self):
@@ -76,7 +77,7 @@ class Client:
         self.send_button.config(font = ("Arial", 12))
         self.send_button.pack(padx = 20, pady = 5)
         
-        self.audio_button = tkinter.Button(self.win, text = "Audio")
+        self.audio_button = tkinter.Button(self.win, text = "Audio on", command = self.toggleAudio) 
         self.audio_button.config(font = ("Arial", 12))
         self.audio_button.pack(padx = 20, pady = 5)
         
@@ -86,13 +87,22 @@ class Client:
         
         self.win.mainloop()
         
+    def toggleAudio(self):
+        if self.mute == False:
+            self.mute = True
+            self.audio_button.config(text = "Audio off")
+        else:
+            self.mute = False
+            self.audio_button.config(text = "Audio on")
+        
     def sendAudio(self):
         while True:
-            try:
-                message = self.input_stream.read(self.Chunks)
-                self.sock.send(message)
-            except:
-                break
+            if self.mute == False:
+                try:
+                    message = self.input_stream.read(self.Chunks)
+                    self.sock.send(message)
+                except:
+                    break
         
     def write(self):
         message = f"{self.nickname}: {self.input_area.get('1.0', 'end')}"
