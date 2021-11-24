@@ -22,7 +22,7 @@ def receive():
         print(f"Se ha conectado {str(address)}")
         
         client.send("Nickname".encode("utf-8"))
-        nickname = client.recv(1024)
+        nickname = client.recv(4096)
         
         nicknames.append(nickname)
         clients.append(client)
@@ -33,18 +33,17 @@ def receive():
         thread.start()
         
 def handle(client):
-    while True:
-        try:
-            message = client.recv(1024)
-            print(f"{nicknames[clients.index(client)]} dice {message}")
+    try:
+        while True:
+            message = client.recv(4096)
             broadcast(message)
-        except:
-            index = clients.index(client)
-            clients.remove(client)
-            client.close()
-            nickname = nicknames[index]
-            nicknames.remove(nickname)
-            break
+    except:
+        index = clients.index(client)
+        clients.remove(client)
+        client.close()
+        nickname = nicknames[index]
+        nicknames.remove(nickname)
+
         
 print("Servidor iniciado")
 receive()
