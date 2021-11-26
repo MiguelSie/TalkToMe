@@ -11,8 +11,13 @@ PORT = 9090
 class Client:
     
     def __init__(self, host, port, nickname):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host, port))
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((host, port))
+        except socket.gaierror:
+            print("Ingrese una IP correcta")
+            exit(1)
+            
         self.nickname = nickname
         
         self.p = pyaudio.PyAudio()
@@ -117,10 +122,10 @@ class Client:
     def toggleAudio(self):
         if self.mute == False:
             self.mute = True
-            self.users_button.config(text = "Audio Off")
+            self.audio_button.config(text = "Audio Off")
         else:
             self.mute = False
-            self.users_button.config(text = "Audio On")
+            self.audio_button.config(text = "Audio On")
             
         
     def sendAudio(self):
