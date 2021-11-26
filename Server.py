@@ -1,7 +1,7 @@
 import socket
 import threading
 
-HOST = "127.0.0.1" # Public ID adress: myip.is
+HOST = "127.0.0.1" 
 PORT = 9090
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,7 +23,7 @@ def receive():
         print(f"Se ha conectado {str(address)}")
         
         client.send("Nickname".encode("utf-8"))
-        nickname = client.recv(4096)
+        nickname = "@"+client.recv(4096).decode("utf-8")
         
         nicknames.append(nickname)
         clients.append(client)
@@ -37,7 +37,15 @@ def handle(client):
     try:
         while True:
             message = client.recv(4096)
-            broadcast(message, client)
+            try:
+                if message.decode("utf-8") == "showParticipantes":
+                    for nickname in nicknames:
+                        client.send(nickname.encode("utf-8"))
+                else:
+                    broadcast(message, client)
+            except:
+                broadcast(message, client)
+                
     except:
         index = clients.index(client)
         clients.remove(client)
